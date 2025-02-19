@@ -3,7 +3,6 @@ import { compose } from 'redux';
 import { Actions } from './types/actions.type';
 import { Picture } from './types/picture.type';
 import { fetchCatsRequest } from './actions';
-import fakeData from './fake-datas.json';
 import { Option, some, none } from 'fp-ts/Option';
 import { Loading, Success, Failure } from './types/api.type';
 import { loading, success, failure } from './api';
