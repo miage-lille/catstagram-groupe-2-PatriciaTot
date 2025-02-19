@@ -7,10 +7,10 @@ export const decrement = (): Decrement => ({ type: 'DECREMENT' });
 export const selectPicture = (picture: Picture): SelectPicture => ({ type: 'SELECT_PICTURE', picture });
 export const closeModal = (): CloseModal => ({ type: 'CLOSE_MODAL' });
 
-export const fetchCatsRequest = (countyer: number): FetchCatsRequest => ({
+export const fetchCatsRequest = (counter: number): FetchCatsRequest => ({
   type: 'FETCH_CATS_REQUEST',
   method: 'GET',
-  path: 'https://pixabay.com/api/?key=48937088-04c4e17c1287d4b71978083ab&per_page=5&q=cat',
+  path: `https://pixabay.com/api/?key=48937088-04c4e17c1287d4b71978083ab&per_page=${counter}&q=cat`,
 });
 
 export const fetchCatsCommit = (pictures: Picture[]): FetchCatsCommit => ({ type: 'FETCH_CATS_COMMIT', payload: pictures });

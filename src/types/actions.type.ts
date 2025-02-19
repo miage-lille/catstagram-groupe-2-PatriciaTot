@@ -13,7 +13,7 @@ export const selectPicture = (picture: Picture): SelectPicture => ({ type: 'SELE
 export const closeModal = (): CloseModal => ({ type: 'CLOSE_MODAL' });
 
 export type FetchCatsRequest = { type: 'FETCH_CATS_REQUEST'; method: 'GET'; path: string };
-export type FetchCatsCommit = { type: 'FETCH_CATS_COMMIT'; payload: unknown }; // TODO : Update this type !
+export type FetchCatsCommit = { type: 'FETCH_CATS_COMMIT'; payload: Picture[] };
 export type FetchCatsRollback = { type: 'FETCH_CATS_ROLLBACK'; error: Error };
 
 export type Actions =
