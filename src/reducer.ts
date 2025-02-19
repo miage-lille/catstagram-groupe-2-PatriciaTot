@@ -5,16 +5,18 @@ import { Picture } from './types/picture.type';
 import { fetchCatsRequest } from './actions';
 import fakeData from './fake-datas.json';
 import { Option, some, none } from 'fp-ts/Option';
+import { Loading, Success, Failure } from './types/api.type';
+import { loading, success, failure } from './api';
 
 export type State = {
   counter: number,
-  pictures: Picture[];
+  pictures: Loading | Success | Failure;
   selectedPicture: Option<Picture>;
 }
 
 export const defaultState: State = {
   counter: 0,
-  pictures: [],
+  pictures: success([]),
   selectedPicture: none,
 }
 
@@ -26,6 +28,7 @@ export const reducer = (state: State | undefined, action: Actions): State | Loop
         {
           ...state,
           counter: state.counter + 1,
+          pictures: loading(),
         },
         Cmd.action(fetchCatsRequest(state.counter + 1))
       );
@@ -35,6 +38,7 @@ export const reducer = (state: State | undefined, action: Actions): State | Loop
             {
               ...state,
               counter: state.counter - 1,
+              pictures: loading(),
             },
             Cmd.action(fetchCatsRequest(state.counter - 1))
           )
@@ -50,12 +54,20 @@ export const reducer = (state: State | undefined, action: Actions): State | Loop
         selectedPicture: none,
       };
     case 'FETCH_CATS_REQUEST':
-      // L'action est déjà gérée par Cmd.fetch
       return state;
     case 'FETCH_CATS_COMMIT':
-      throw 'Not Implemented';
+      return {
+        ...state,
+        pictures: success(action.payload as Picture[]),
+      };
     case 'FETCH_CATS_ROLLBACK':
-      throw 'Not Implemented';
+      return loop(
+        {
+          ...state,
+          pictures: failure(action.error.message),
+        },
+        Cmd.run(() => console.error('Error fetching cats:', action.error.message))
+      );
     default:
       return state;
   }

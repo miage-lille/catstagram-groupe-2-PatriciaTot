@@ -6,6 +6,7 @@ import { selectPicture, closeModal } from '../actions';
 import ModalPortal from './modal';
 import { Picture } from '../types/picture.type';
 import { Option, isSome } from 'fp-ts/Option';
+import { Loading, Success, Failure } from '../types/api.type';
 
 const Container = styled.div`
   padding: 1rem;
@@ -32,19 +33,22 @@ const Pictures = () => {
   return (
     <>
       <Container>
-        {pictures.map((picture, index) => (
-          <Image 
-            key={index} 
-            src={picture.previewFormat} 
-            alt={picture.author} 
-            onClick={() => dispatch(selectPicture(picture))}
-          />
-        ))}
+        {pictures.kind === 'LOADING' && <div>Loading...</div>}
+        {pictures.kind === 'SUCCESS' &&
+          pictures.pictures.map((picture, index) => (
+            <Image
+              key={index}
+              src={picture.previewFormat}
+              alt={picture.author}
+              onClick={() => dispatch(selectPicture(picture))}
+            />
+          ))}
+        {pictures.kind === 'FAILURE' && <div>Error: {pictures.error}</div>}
       </Container>
       {isSome(selectedPicture) && (
-        <ModalPortal 
-          largeFormat={selectedPicture.value.largeFormat} 
-          close={() => dispatch(closeModal())} 
+        <ModalPortal
+          largeFormat={selectedPicture.value.largeFormat}
+          close={() => dispatch(closeModal())}
         />
       )}
     </>

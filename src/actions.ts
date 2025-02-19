@@ -11,8 +11,8 @@ export const fetchCatsRequest = (countyer: number): FetchCatsRequest => ({
   type: 'FETCH_CATS_REQUEST',
   method: 'GET',
   path: 'https://pixabay.com/api/?key=48937088-04c4e17c1287d4b71978083ab&per_page=5&q=cat',
-}); // TODO : Update this value !
+});
 
-export const fetchCatsCommit = (payload: unknown): FetchCatsCommit => ({ type: 'FETCH_CATS_COMMIT', payload });
+export const fetchCatsCommit = (pictures: Picture[]): FetchCatsCommit => ({ type: 'FETCH_CATS_COMMIT', payload: pictures });
 
 export const fetchCatsRollback = (error: Error): FetchCatsRollback => ({ type: 'FETCH_CATS_ROLLBACK', error });
