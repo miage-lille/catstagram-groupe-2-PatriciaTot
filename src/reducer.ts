@@ -1,39 +1,81 @@
-import { Loop, liftState } from 'redux-loop';
+import { Loop, Cmd, liftState, loop } from 'redux-loop';
 import { compose } from 'redux';
 import { Actions } from './types/actions.type';
+import { Picture } from './types/picture.type';
+import { fetchCatsRequest } from './actions';
+import { Option, some, none } from 'fp-ts/Option';
+import { Loading, Success, Failure } from './types/api.type';
+import { loading, success, failure } from './api';
 
-export type State = unknown; // TODO : Update this type !
+export type State = {
+  counter: number,
+  pictures: Loading | Success | Failure;
+  selectedPicture: Option<Picture>;
+}
 
-export const defaultState = {}; // TODO : Update this value !
+export const defaultState: State = {
+  counter: 0,
+  pictures: success([]),
+  selectedPicture: none,
+}
 
 export const reducer = (state: State | undefined, action: Actions): State | Loop<State> => {
   if (!state) return defaultState; // mandatory by redux
   switch (action.type) {
     case 'INCREMENT':
-      throw 'Not Implemented';
+      return loop(
+        {
+          ...state,
+          counter: state.counter + 1,
+          pictures: loading(),
+        },
+        Cmd.action(fetchCatsRequest(state.counter + 1))
+      );
     case 'DECREMENT':
-      throw 'Not Implemented';
+      return state.counter > 3
+        ? loop(
+            {
+              ...state,
+              counter: state.counter - 1,
+              pictures: loading(),
+            },
+            Cmd.action(fetchCatsRequest(state.counter - 1))
+          )
+        : state;
     case 'SELECT_PICTURE':
-      throw 'Not Implemented';
+      return {
+        ...state,
+        selectedPicture: some(action.picture),
+      };
     case 'CLOSE_MODAL':
-      throw 'Not Implemented';
+      return {
+        ...state,
+        selectedPicture: none,
+      };
     case 'FETCH_CATS_REQUEST':
-      throw 'Not Implemented';
+      return state;
     case 'FETCH_CATS_COMMIT':
-      throw 'Not Implemented';
+      return {
+        ...state,
+        pictures: success(action.payload as Picture[]),
+      };
     case 'FETCH_CATS_ROLLBACK':
-      throw 'Not Implemented';
+      return loop(
+        {
+          ...state,
+          pictures: failure(action.error.message),
+        },
+        Cmd.run(() => console.error('Error fetching cats:', action.error.message))
+      );
+    default:
+      return state;
   }
 };
 
-export const counterSelector = (state: State) => {
-  throw 'Not Implemented';
-};
-export const picturesSelector = (state: State) => {
-  throw 'Not Implemented';
-};
-export const getSelectedPicture = (state: State) => {
-  throw 'Not Implemented';
-};
+export const counterSelector = (state: State) => state.counter;
+
+export const picturesSelector = (state: State) => state.pictures;
+
+export const getSelectedPicture = (state: State) => state.selectedPicture;
 
 export default compose(liftState, reducer);
